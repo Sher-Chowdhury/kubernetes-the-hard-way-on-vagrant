@@ -1,0 +1,27 @@
+---
+
+# made a complex look to try to make this perform faster
+# https://github.com/ansible/ansible/issues/19548
+- name: Download and install the kube binaries
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/usr/local/bin/{{ item.filename }}"
+    mode: 0555
+  loop: 
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kube-apiserver", filename: 'kube-apiserver'}
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kube-controller-manager", filename: 'kube-controller-manager'}
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kube-scheduler", filename: 'kube-scheduler'}
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kube-scheduler", filename: 'kube-scheduler'}
+#    - "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kube-scheduler"
+#    - "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kubectl"
+
+
+
+
+- name: create kubernetes lib folder
+  file:
+    path: "/var/lib/kubernetes"
+    state: directory
+    mode: 0755
+
+

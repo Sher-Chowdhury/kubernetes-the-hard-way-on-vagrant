@@ -1,0 +1,41 @@
+---
+
+- name: create etc kubernetes config folder
+  file:
+    path: /etc/kubernetes/config
+    state: directory
+    mode: 0755
+
+- name: copy kube-scheduler.kubeconfig files to lib folder folder
+  copy: 
+    src: /root/kthw/kubeconfigs/kube-scheduler.kubeconfig
+    dest: /var/lib/kubernetes
+    remote_src: yes
+    mode: 0655
+  notify: restart kube-scheduler
+
+- name: Create kube scheduler config file
+  copy: 
+    content: |
+      apiVersion: componentconfig/v1alpha1
+      kind: KubeSchedulerConfiguration
+      clientConnection:
+        kubeconfig: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
+      leaderElection:
+        leaderElect: true
+    dest: /etc/kubernetes/config/kube-scheduler.yaml
+    mode: 0655
+
+- name: Copy across the kube-scheduler.service systemd file
+  copy: 
+    src: kube-scheduler.service
+    dest: /etc/systemd/system/kube-scheduler.service
+    mode: 0755
+  notify: restart kube-scheduler
+
+- name: start kube-scheduler service daemon 
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: kube-scheduler

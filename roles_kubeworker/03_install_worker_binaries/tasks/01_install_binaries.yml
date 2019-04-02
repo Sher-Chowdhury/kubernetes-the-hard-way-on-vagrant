@@ -1,0 +1,66 @@
+---
+
+
+- name: Install binaries
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages: 
+      - socat
+      - conntrack
+      - ipset
+
+
+- name: create folders
+  file: 
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop: 
+    - /etc/cni
+    - /etc/cni/net.d
+    - /opt/cni
+    - /opt/cni/bin
+    - /var/lib/kubelet
+    - /var/lib/kube-proxy
+    - /var/lib/kubernetes
+    - /var/run/kubernetes
+    - /root/kthw/binaries
+#    - /root/kthw/binaries/crictl
+#    - /root/kthw/binaries/cni-plugins
+    - /root/kthw/binaries/containerd
+
+- name: Download tar gzipped binaries
+  unarchive:
+    src: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    remote_src: yes
+  loop:
+    - { url: 'https://github.com/kubernetes-incubator/cri-tools/releases/download/v1.0.0-beta.0/crictl-v1.0.0-beta.0-linux-amd64.tar.gz', dest: '/usr/local/bin/' }
+    - { url: 'https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz', dest: '/opt/cni/bin/' }
+#    - { url: 'https://github.com/containerd/containerd/releases/download/v1.2.0/containerd-1.2.0.linux-amd64.tar.gz', dest: '/root/kthw/binaries/containerd' }
+    - { url: 'https://github.com/containerd/containerd/releases/download/v1.1.0/containerd-1.1.0.linux-amd64.tar.gz', dest: '/root/kthw/binaries/containerd' }
+
+
+
+
+- name: Download and install the kube binaries
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/usr/local/bin/{{ item.name }}"
+    mode: 0555
+  loop: 
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kubectl", name: 'kubectl' }
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kube-proxy", name: 'kube-proxy' }
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kubelet", name: 'kubelet' }
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kubelet", name: 'kubelet' }
+    - { url: "https://storage.googleapis.com/kubernetes-the-hard-way/runsc", name: 'runsc' }
+    - { url: "https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64", name: 'runc' }
+
+- name: Copy containerd binaries into path folder
+  shell: /bin/cp /root/kthw/binaries/containerd/bin/* /bin/
+  args:
+    creates: /bin/containerd

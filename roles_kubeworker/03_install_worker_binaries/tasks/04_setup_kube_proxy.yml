@@ -1,0 +1,34 @@
+---
+
+- name: copy across kube-proxy config files
+  copy: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    remote_src: yes
+  loop: 
+    - { src: '/root/kthw/kubeconfigs/kube-proxy.kubeconfig', dest: '/var/lib/kube-proxy/kubeconfig' }
+  notify: restart kube-proxy
+
+
+
+- name: copy accross more kube proxy config files
+  copy:
+    src: "kube-proxy/{{ item.filename }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { filename: 'kube-proxy-config.yaml', dest: '/var/lib/kube-proxy/kube-proxy-config.yaml' }
+    - { filename: 'kube-proxy.service', dest: '/etc/systemd/system/kube-proxy.service' }
+  notify: restart kube-proxy
+
+
+- name: start kube-proxy
+  systemd:
+    name: kube-proxy
+    daemon_reload: yes
+    enabled: true
+    state: started
+
+# at this point run the following to check status of all services:
+# systemctl status containerd.service kubelet.service kube-proxy.service

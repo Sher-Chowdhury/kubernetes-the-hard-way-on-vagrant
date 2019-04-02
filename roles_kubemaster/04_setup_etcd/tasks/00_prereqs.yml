@@ -1,0 +1,9 @@
+---
+
+- name: create etcd working folder
+  file:
+    path: "/root/kthw/etcd"
+    state: directory
+    mode: 0755
+
+

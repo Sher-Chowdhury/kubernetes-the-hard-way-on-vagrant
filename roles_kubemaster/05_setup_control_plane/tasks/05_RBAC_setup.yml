@@ -1,0 +1,34 @@
+---
+
+- name: Create rbac folder for storing rbac configs
+  file:
+    path: /root/kthw/kubeconfigs/kube_objects
+    state: directory
+    mode: 0755
+
+- name: copy files to lib folder folder
+  copy: 
+    src: "rbac/{{ item }}"
+    dest: /root/kthw/kubeconfigs/kube_objects
+  loop: 
+    - create-role-and-permissions.yml
+    - bind-role-to-kubernetes-user.yml
+  register: rbac_config_files_creation_result
+
+- name: Create Kubectl role access permissions and then assign that role to the kubernetes user. 
+  shell: |
+    kubectl apply --kubeconfig /root/kthw/kubeconfigs/admin.kubeconfig --filename=/root/kthw/kubeconfigs/kube_objects/create-role-and-permissions.yml
+    kubectl apply --kubeconfig /root/kthw/kubeconfigs/admin.kubeconfig --filename=/root/kthw/kubeconfigs/kube_objects/bind-role-to-kubernetes-user.yml
+  register: create_role_and_permissions_results
+  when: rbac_config_files_creation_result.changed
+  until: create_role_and_permissions_results is not failed   # that's because iam role can 
+  retries: 1                                    # take a few extra seconds before it's available
+  delay: 10
+  # check the above worked by running, to see if they exist:
+  # kubectl get clusterrole system:kube-apiserver-to-kubelet
+  # kubectl get clusterrolebinding system:kube-apiserver
+
+- name: results of applying configs
+  debug: 
+    msg: "{{ create_role_and_permissions_results }}"
+  when: create_role_and_permissions_results is defined

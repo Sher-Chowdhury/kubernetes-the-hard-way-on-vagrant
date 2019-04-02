@@ -1,0 +1,42 @@
+---
+
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/04-certificate-authority.md
+
+- name: Copy across the kubernetes-csr.json file
+  copy:
+    src: tls/06_api_server_certs/kubernetes-csr.json
+    dest: /vagrant/kube_cache/tls/06_api_server_certs/kubernetes-csr.json
+    mode: 0644
+
+- name: create main_dns_whitelist
+  set_fact:
+    main_dns_whitelist: "10.32.0.1,127.0.0.1,localhost,kubernetes.default,10.2.50.110,kube-master.example.com,10.2.50.111,kube-worker1.example.com,10.2.50.112,kube-worker2.example.com"
+  # 10.32.0.1 is a special ip address used internally by kubernetes itself. 
+  # the other ip address are taken from the vagrantfile
+  # no loadbalancer ip addresses listed here. 
+  # kubernetes.default - this is another thing used by kubernetes internally 
+
+
+- name: print main_dns_whitelist in it's final form
+  debug:
+    msg: "{{ main_dns_whitelist }}"
+
+- name: This command affectively generates the CA related files 
+  shell: |
+    /usr/local/bin/cfssl gencert \
+    -ca=/vagrant/kube_cache/tls/01_ca/ca.pem \
+    -ca-key=/vagrant/kube_cache/tls/01_ca/ca-key.pem \
+    -config=/vagrant/kube_cache/tls/01_ca/ca-config.json \
+    -hostname={{ main_dns_whitelist }}\
+    -profile=kubernetes \
+    kubernetes-csr.json | /usr/local/bin/cfssljson -bare kubernetes
+  args:
+    chdir: /vagrant/kube_cache/tls/06_api_server_certs
+    creates: /vagrant/kube_cache/tls/06_api_server_certs/kubernetes-key.pem
+# it also creates
+# - /vagrant/kube_cache/tls/03_controller_manager_certs/kubernetes.pem
+# - /vagrant/kube_cache/tls/03_controller_manager_certs/kubernetes.csr
+# you can check if the hostname list is correct by running:
+# openssl x509 -noout -text -in /vagrant/kube_cache/tls/06_api_server_certs/kubernetes.pem | grep DNS:
+

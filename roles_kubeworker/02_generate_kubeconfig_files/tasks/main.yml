@@ -1,0 +1,9 @@
+---
+
+
+- include_tasks: 00_install_kubectl.yml
+- include_tasks: 01_generate_kublet_kubeconfig_file.yml 
+- include_tasks: 02_generate_kubeproxy_kubeconfig_file.yml
+
+# systemctl daemon-reload
+# systemctl status containerd.service kube-proxy.service kubelet.service

@@ -1,0 +1,22 @@
+---
+# https://kubernetes.io/docs/tasks/tools/install-kubectl/
+- name: Update repositories cache and install "apt-transport-https" package
+  apt:
+    name: apt-transport-https
+
+- name: Download and install kubectl binary
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/usr/local/bin/{{ item.name }}"
+    mode: 0555
+  loop: 
+    - { url: "https://storage.googleapis.com/kubernetes-release/release/v{{ kube_version }}/bin/linux/amd64/kubectl", name: 'kubectl'}
+
+- name: create the kubeconfig folder
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /root/kthw
+    - /root/kthw/kubeconfigs

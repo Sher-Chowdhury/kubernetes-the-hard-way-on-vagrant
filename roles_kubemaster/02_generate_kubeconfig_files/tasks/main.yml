@@ -1,0 +1,6 @@
+---
+
+- include_tasks: 00_install_kubectl.yml
+- include_tasks: 01_generate_kube_controller_manager_kubeconfig_file.yml
+- include_tasks: 02_generate_kube_scheduler_kubeconfig_file.yml 
+- include_tasks: 03_generate_admin_kubeconfig_file.yml 

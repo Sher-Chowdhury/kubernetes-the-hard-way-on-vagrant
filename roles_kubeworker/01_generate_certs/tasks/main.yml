@@ -1,0 +1,7 @@
+---
+
+- include_tasks: 00_prereqs.yml
+
+#- include_tasks: 01_download_certs.yml
+
+- include_tasks: 02_generate_worker_certs.yml

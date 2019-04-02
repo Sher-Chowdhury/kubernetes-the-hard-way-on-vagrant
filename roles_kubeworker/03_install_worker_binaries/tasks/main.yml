@@ -1,0 +1,19 @@
+---
+
+
+- include_tasks: 01_install_binaries.yml
+- include_tasks: 02_setup_containerd.yml
+- include_tasks: 03_setup_kubelet.yml
+- include_tasks: 04_setup_kube_proxy.yml
+- include_tasks: 05_setup_kubectl.yml
+- include_tasks: 06_install_weave_networking_plugin.yml 
+
+
+# systemctl daemon-reload
+# systemctl status containerd.service kube-proxy.service kubelet.service
+# journalctl -xu kubelet.service
+
+# to confirm all this has worked, run the following command on the kube master:
+
+# kubectl get nodes
+# note, status should still be 'NotReady' since we havent installed networking plugin yet. 

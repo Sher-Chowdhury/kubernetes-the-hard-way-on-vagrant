@@ -1,0 +1,45 @@
+---
+
+# https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
+
+- name: copy files to lib folder folder
+  copy: 
+    src: "{{ item }}"
+    dest: /var/lib/kubernetes
+    remote_src: yes
+    mode: 0555
+  loop: 
+    - /vagrant/kube_cache/tls/01_ca/ca.pem
+    - /vagrant/kube_cache/tls/01_ca/ca-key.pem
+    - /vagrant/kube_cache/tls/06_api_server_certs/kubernetes.pem
+    - /vagrant/kube_cache/tls/06_api_server_certs/kubernetes-key.pem
+    - /vagrant/kube_cache/encryption-configs/encryption-config.yaml
+    - /vagrant/kube_cache/tls/07_service_account_key_pair/service-account.pem
+    - /vagrant/kube_cache/tls/07_service_account_key_pair/service-account-key.pem
+  notify: restart kube-apiserver
+
+  # https://worker1:2379,https://worker2:2379...etc
+- name: Set ETCD_CLUSTER variable
+  set_fact:
+    ETCD_CLUSTER: "https://{{ eth1_ip_address }}:2379"
+
+- name: Generate the kube-apiserver.service systemd file. 
+  template: 
+    src: kube-apiserver.service.j2
+    dest: /etc/systemd/system/kube-apiserver.service
+    mode: 0755
+  notify: restart kube-apiserver
+
+- name: start kube-apiserver service daemon 
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: kube-apiserver
+
+# you can run the following command to confirm etcd is working properly:
+# ETCDCTL_API=3 etcdctl member list \
+#   --endpoints=https://127.0.0.1:2379 \
+#   --cacert=/etc/etcd/ca.pem \
+#   --cert=/etc/etcd/kubernetes.pem \
+#   --key=/etc/etcd/kubernetes-key.pem

@@ -1,0 +1,41 @@
+---
+
+
+
+- name: create containerd folders
+  file: 
+    path: "{{ item }}" 
+    state: directory
+    mode: 0755
+  loop:
+    - /etc/containerd
+    - /run/containerd
+    - /run/containerd/runsc
+    - /run/containerd/runsc/k8s.io
+
+- name: copying across containerd config file
+  copy:
+    src: containerd/config.toml
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart containerd
+
+
+- name: copying across containerd config file
+  copy:
+    src: containerd/containerd.service
+    dest: /etc/systemd/system/containerd.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart containerd
+
+
+- name: start containerd
+  systemd:
+    name: containerd
+    daemon_reload: yes
+    enabled: true
+    state: started

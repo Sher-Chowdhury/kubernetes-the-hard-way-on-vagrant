@@ -1,0 +1,16 @@
+---
+
+# run the following 
+# systemctl status kube-controller-manager.service
+# systemctl status kube-scheduler.service
+# systemctl status kube-apiserver.service
+
+# kubectl get componentstatuses --kubeconfig /vagrant/kube_cache/kubeconfigs/admin.kubeconfig
+- name: Check componentstatuses to see if it is all running ok
+  command: kubectl get componentstatuses --kubeconfig /root/kthw/kubeconfigs/admin.kubeconfig 
+  register: kubectl_componentstatuses_results
+  changed_when: false
+
+- name: Print out results
+  debug:
+    msg: "{{ kubectl_componentstatuses_results }}"

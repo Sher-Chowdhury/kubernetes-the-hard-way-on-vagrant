@@ -1,0 +1,37 @@
+---
+
+- name: copying over the ca-config.json file
+  copy:
+    src: tls/ca-config.json
+    dest: /root/kthw/tls/ca-config.json
+    owner: root
+    group: root
+    mode: 0644
+#  loop:
+#    - ca-config.json
+#    - worker-csr.json
+
+
+- name: Generate the worker-csr.json file 
+  template:
+    src: tls/worker-csr.json.j2
+    dest: /root/kthw/tls/worker-csr.json
+
+
+
+
+- name: This command affectively generates the CA related files.  
+  shell: |
+    /usr/local/bin/cfssl gencert \
+    -ca=/vagrant/kube_cache/tls/01_ca/ca.pem \
+    -ca-key=/vagrant/kube_cache/tls/01_ca/ca-key.pem \
+    -config=ca-config.json \
+    -hostname={{ eth1_ip_address }},{{ ansible_hostname }} \
+    -profile=kubernetes \
+    worker-csr.json | /usr/local/bin/cfssljson -bare worker
+  args:
+    chdir: /root/kthw/tls
+    creates: /root/kthw/tls/worker.pem
+# also creates:
+# /root/kthw/tls/worker-key.pem
+# /root/kthw/tls/worker-csr.pem   # this is a by-product of above command and isn't needed anymore. 

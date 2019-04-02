@@ -1,0 +1,35 @@
+---
+
+# here we provision a Certificate Authority (CA) and use it to provision certificates. 
+# https://linuxacademy.com/cp/courses/lesson/course/3052/lesson/1/module/221
+
+# the certs we need are
+# - Client Certificates
+# - Kubernetes API Server Certificate
+# - Service Account Key Pair
+
+
+
+
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/04-certificate-authority.md
+
+- name: copy across the ca config and csr file 
+  copy:
+    src: "tls/01_ca/{{ item }}"
+    dest: "/vagrant/kube_cache/tls/01_ca/{{ item }}"
+    mode: 0644
+  loop:
+    - ca-config.json
+    - ca-csr.json
+
+
+- name: This command affectively generates the CA related files.  
+  shell: /usr/local/bin/cfssl gencert -initca ca-csr.json | /usr/local/bin/cfssljson -bare ca
+  args:
+    chdir: /vagrant/kube_cache/tls/01_ca
+    creates: /vagrant/kube_cache/tls/01_ca/ca.pem
+# it also creates:
+#      - /vagrant/kube_cache/tls/01_ca/ca-key.pem    # this is the private certificate of the CA
+#      - /vagrant/kube_cache/tls/01_ca/ca.pem        # this the is the public certificate
+

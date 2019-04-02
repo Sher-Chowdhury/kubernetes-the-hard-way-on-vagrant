@@ -1,0 +1,37 @@
+---
+
+- name: copy across kubelet config files
+  copy: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    remote_src: yes
+  loop: 
+    - { src: '/root/kthw/tls/worker-key.pem', dest: '/var/lib/kubelet/worker-key.pem' }
+    - { src: '/root/kthw/tls/worker.pem', dest: '/var/lib/kubelet/worker.pem' }
+    - { src: '/root/kthw/kubeconfigs/{{ ansible_hostname | lower }}.kubeconfig', dest: '/var/lib/kubelet/kubeconfig' }
+    - { src: '/vagrant/kube_cache/tls/01_ca/ca.pem', dest: '/var/lib/kubernetes/ca.pem' }
+
+
+
+- name: create the kubelet-config.yaml file 
+  copy:
+    src: kubelet/kubelet-config.yml
+    dest: /var/lib/kubelet/kubelet-config.yaml
+  notify: restart kubelet
+
+- name: create the kubelet.service daemon file 
+  template:
+    src: kubelet/kubelet.service.j2
+    dest: /etc/systemd/system/kubelet.service
+  notify: restart kubelet
+
+
+
+- name: start kubelet
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    enabled: true
+    state: started

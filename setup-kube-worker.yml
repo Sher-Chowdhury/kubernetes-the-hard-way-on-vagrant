@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes 
+  gather_facts: yes
+  roles:
+    ## roles_common folder
+    - { role: disable-swap, tags: disable-swap }
+    - { role: enable-vagrant-eth1, tags: enable-vagrant-eth1 }
+    - { role: packages, tags: packages }
+
+    ## roles_kubeworker folder
+    - { role: 01_generate_certs, tags: 01_generate_certs }
+    - { role: 02_generate_kubeconfig_files, tags: 02_generate_kubeconfig_files }
+    - { role: 03_install_worker_binaries, tags: 03_install_worker_binaries }

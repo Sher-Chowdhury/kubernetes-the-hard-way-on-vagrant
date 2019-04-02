@@ -1,0 +1,14 @@
+---
+
+- include_tasks: 00_install_cfssl.yml
+- include_tasks: 01_certificate_authority.yml 
+- include_tasks: 03_admin_client_certs.yml
+- include_tasks: 04_controller_manager_certs.yml
+- include_tasks: 05_kube_proxy_certs.yml
+- include_tasks: 06_kube_scheduler_certs.yml
+- include_tasks: 07_api_server_certs.yml
+- include_tasks: 08_service_account_key_pair.yml
+
+
+# Note: kublet related client certs are generated on the worker nodes, during the inital the initial ansible run. 
+# see the Kubernetes Worker git branch for that code. 

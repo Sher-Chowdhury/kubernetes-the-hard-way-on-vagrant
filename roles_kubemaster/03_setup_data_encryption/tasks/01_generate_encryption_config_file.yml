@@ -1,0 +1,10 @@
+---
+
+- name: generate a password
+  shell: /usr/bin/head -c 32 /dev/urandom | /usr/bin/base64 
+  register: ENCRYPTION_KEY
+
+- name: create encryption config file
+  template:
+    src: encryption-config.yaml.j2
+    dest: /vagrant/kube_cache/encryption-configs/encryption-config.yaml

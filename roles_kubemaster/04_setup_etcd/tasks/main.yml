@@ -1,0 +1,80 @@
+---
+
+# https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/
+
+
+- include_tasks: 00_prereqs.yml
+
+
+- name: Download and Unarchive etcd binary zip file. 
+  unarchive:
+    src: https://github.com/etcd-io/etcd/releases/download/v3.3.10/etcd-v3.3.10-linux-amd64.tar.gz 
+    dest: /root/kthw/etcd
+    owner: root
+    group: root
+    remote_src: yes
+
+- name: copy etcd binary files to path folder
+  copy: 
+    src: "/root/kthw/etcd/etcd-v3.3.10-linux-amd64/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    remote_src: yes
+    mode: 0555
+  loop: 
+    - etcd
+    - etcdctl
+
+
+- name: create etcd related folders
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop: 
+    - /etc/etcd
+    - /var/lib/etcd
+
+
+- name: copy certs to etcd folder
+  copy: 
+    src: "{{ item }}"
+    dest: /etc/etcd
+    remote_src: yes
+    mode: 0555
+  loop: 
+    - /vagrant/kube_cache/tls/01_ca/ca.pem
+    - /vagrant/kube_cache/tls/06_api_server_certs/kubernetes.pem
+    - /vagrant/kube_cache/tls/06_api_server_certs/kubernetes-key.pem
+  notify: restart etcd service
+
+# INITIAL_CLUSTER=<worker1 hostname>=https://<worker1 ip>:2380,<worker2 hostname>=https://<worker2 ip>:2380...etc
+
+
+- name: Set INITIAL_CLUSTER variable
+  set_fact:
+    INITIAL_CLUSTER: "{{ ansible_fqdn }}=https://{{ eth1_ip_address }}:2380"
+
+- name: Generate the etcd.service systemd file. 
+  template: 
+    src: etcd.service.j2
+    dest: /etc/systemd/system/etcd.service
+    mode: 0755
+  notify: restart etcd service
+
+- name: start etcd daemon 
+  systemd:
+    state: started
+    enabled: yes
+    daemon_reload: yes
+    name: etcd
+
+# you can run the following command to confirm etcd is working properly:
+# ETCDCTL_API=3 etcdctl member list \
+#   --endpoints=https://127.0.0.1:2379 \
+#   --cacert=/etc/etcd/ca.pem \
+#   --cert=/etc/etcd/kubernetes.pem \
+#   --key=/etc/etcd/kubernetes-key.pem
+
+# this outputs something like:
+# ccff85ec2a9427f0, started, kube-master, https://10.2.50.110:2380, https://10.2.50.110:2379
+# one line, per etcd server. 

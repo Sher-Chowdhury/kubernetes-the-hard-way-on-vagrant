@@ -1,0 +1,40 @@
+---
+##
+## install cfssl tools
+## 
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/02-client-tools.md
+- name: Download and install the cfssl binary
+  get_url:
+    url: https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+    dest: /usr/local/bin/cfssl
+    mode: 0555
+
+
+- name: Download and install the cfssl binary
+  get_url:
+    url: https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 
+    dest: /usr/local/bin/cfssljson
+    mode: 0555
+
+# should now be able to run:
+# cfssl version
+
+
+##
+## Create folders for storing certs
+##
+- name: create the kubernetes the hardway folder
+  file:
+    path: "/vagrant/kube_cache/{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - tls
+    - tls/01_ca
+    - tls/02_admin_client_certs
+    - tls/03_controller_manager_certs
+    - tls/04_kube_proxy_certs
+    - tls/05_kube_scheduler_certs
+    - tls/06_api_server_certs
+    - tls/07_service_account_key_pair

@@ -1,0 +1,20 @@
+---
+
+# https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/
+
+
+- name: create the kubeconfig folder
+  file:
+    path: /vagrant/kube_cache/encryption-configs
+    state: directory
+    mode: 0755
+
+- name: Ansible check file exists example.
+  stat:
+    path: /vagrant/kube_cache/encryption-configs/encryption-config.yaml 
+  register: file_details
+
+
+
+- include_tasks: 01_generate_encryption_config_file.yml
+  when: not file_details.stat.exists

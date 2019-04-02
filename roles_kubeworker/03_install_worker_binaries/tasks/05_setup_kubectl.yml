@@ -1,0 +1,49 @@
+---
+# this is optional, but is in fact required for setting up networking plugin.  It let's you set up the kubectl utility to communicate with the kube-api. 
+# normally this is something you do on your macbook, or jenkins server. 
+# kubectl command on kubemasters are already working
+
+# here we are pretending kubemaster is the loadbalancer. 
+- name: Set facts for new_ec2_instance_ip_address and the image_id
+  set_fact: 
+    kube_elb_ip_address: "{{ kubemaster_ip_address }}"
+
+- name: Create the kubectl.kubeconfig file.  
+  shell: |
+    kubectl config set-cluster codingbee_cluster \
+    --certificate-authority=/vagrant/kube_cache/tls/01_ca/ca.pem \
+    --embed-certs=true \
+    --server=https://{{ kube_elb_ip_address }}:6443 \
+    --kubeconfig=/root/kubectl.kubeconfig
+
+    kubectl config set-credentials admin \
+    --client-certificate=/vagrant/kube_cache/tls/02_admin_client_certs/admin.pem \
+    --client-key=/vagrant/kube_cache/tls/02_admin_client_certs/admin-key.pem \
+    --embed-certs=true \
+    --kubeconfig=/root/kubectl.kubeconfig
+
+    kubectl config set-context codingbee_cluster \
+    --cluster=codingbee_cluster \
+    --user=admin \
+    --kubeconfig=/root/kubectl.kubeconfig
+
+    kubectl config use-context codingbee_cluster --kubeconfig=/root/kubectl.kubeconfig
+  args:
+    chdir: /root/
+    creates: /root/kubectl.kubeconfig
+
+
+- name: set up profile file for setting up kubectl
+  copy: 
+    content: |
+      export KUBECONFIG=/root/kubectl.kubeconfig
+      source <(kubectl completion bash)
+    dest: /etc/profile.d/kubectl.sh
+
+# now you should be able to run the following command on the worker nodes:
+# kubectl get nodes 
+# kubectl get pods   # at this point it should say 'no resoureces found', since we haven't created any pods yet
+
+# you can also check the contents of the kubectl.kubeconfig by running:
+# kubectl config get-clusters
+# kubectl config get-contexts

@@ -1,0 +1,32 @@
+---
+
+# https://chrislovecnm.com/kubernetes/cni/choosing-a-cni-provider/
+# https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/
+- name: Update sysctl settings - this is a requirement for using flannel cni
+  sysctl:
+    name: "{{ item }}"
+    sysctl_file: /etc/sysctl.d/kubernetes.conf
+    value: 1
+    sysctl_set: yes
+    state: present
+    reload: yes
+  loop: 
+    - net.ipv4.conf.all.forwarding 
+
+#- name: check if weave addon is alaready installed
+#  shell: KUBECONFIG=/root/kubectl.kubeconfig kubectl get pods -n kube-system  | grep -o weave
+#  register: weave_install_status
+#  changed_when: false
+
+# https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#install
+- name: install weave networking pods
+  shell: KUBECONFIG=/root/kubectl.kubeconfig kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=10.200.0.0/16"
+#  when: weave_install_status.stdout_lines[0] == 'weave'
+
+
+# troubelshooting commands:
+# kubectl get pods -n kube-system
+# kubectl logs weave-net-2blvz weave -n kube-system
+
+
+

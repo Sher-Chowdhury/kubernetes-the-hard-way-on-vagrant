@@ -1,0 +1,39 @@
+---
+
+# here we provision a Certificate Authority (CA) and use it to provision certificates. 
+# https://linuxacademy.com/cp/courses/lesson/course/3052/lesson/1/module/221
+
+# the certs we need are
+# - Client Certificates
+# - Kubernetes API Server Certificate
+# - Service Account Key Pair
+
+
+
+
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/docs/04-certificate-authority.md
+
+- name: copying over the admin-csr.json file 
+  copy:
+    src: "tls/02_admin_client_certs/{{ item }}"
+    dest: "/vagrant/kube_cache/tls/02_admin_client_certs/{{ item }}"
+    mode: 0644
+  loop:
+    - admin-csr.json
+
+# Note, both ca.pem and ca-key.pem is used below to create the admin certificate.
+- name: This command affectively generates the CA related files.  
+  shell: |
+    /usr/local/bin/cfssl gencert \
+    -ca=/vagrant/kube_cache/tls/01_ca/ca.pem \
+    -ca-key=/vagrant/kube_cache/tls/01_ca/ca-key.pem \
+    -config=/vagrant/kube_cache/tls/01_ca/ca-config.json \
+    -profile=kubernetes \
+    admin-csr.json | /usr/local/bin/cfssljson -bare admin 
+  args:
+    chdir: /vagrant/kube_cache/tls/02_admin_client_certs
+    creates: /vagrant/kube_cache/tls/02_admin_client_certs/admin-key.pem
+# also creates:
+# - /vagrant/kube_cache/tls/02_admin_client_certs/admin.csr  # not needed for anyting elese those
+# - /vagrant/kube_cache/tls/02_admin_client_certs/admin.pem 
+
