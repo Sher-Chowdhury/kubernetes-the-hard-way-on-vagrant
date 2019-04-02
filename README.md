@@ -1,10 +1,8 @@
 # Intro
 
-A typical kubecluster is made up of several linux VMs that are on the same network. These servers are:
+This vagrant project builds a 1-master and 1-worker node. You can run kubectl command inside either master or worker nodes. 
 
-
-- Master/Controller nodes
-- Worker nodes
+There is no loadbalancer in this setup. 
 
 
 ## Kubemaster / Controller / Control Plane
