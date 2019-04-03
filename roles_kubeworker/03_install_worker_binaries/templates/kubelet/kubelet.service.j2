@@ -15,7 +15,8 @@ ExecStart=/usr/local/bin/kubelet \
   --register-node=true \
   --v=2 \
   --hostname-override={{ ansible_hostname }} \
-  --allow-privileged=true
+  --allow-privileged=true \
+  --node-ip={{ eth1_ip_address }}               # had to add this to make this vagrant project use eth1 interface
 Restart=on-failure
 RestartSec=5
 
