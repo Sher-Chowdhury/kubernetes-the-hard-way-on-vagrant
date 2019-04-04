@@ -56,7 +56,7 @@ Vagrant.configure(2) do |config|
         kube_version: "1.10.2"
       }
       ansible.playbook = "setup-kube-master.yml"
-      ansible.tags = "05_setup_control_plane"
+      # ansible.tags = "05_setup_control_plane"
     end
 
     kube_master.trigger.after :destroy do |trigger|
