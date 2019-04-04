@@ -43,6 +43,7 @@
 # this should have created 3 pods, which you can list:
 # kubectl get pods -l k8s-app=kube-dns -n kube-system
 
-# Any pods you create from now on will have containers that have additional nameserver entries in /etc/resolv.conf. 
 # kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
-# kubectl exec -it $POD_NAME -- nslookup kubernetes
+# kubectl exec -it busybox_pod_name -- nslookup kubernetes
+
+
