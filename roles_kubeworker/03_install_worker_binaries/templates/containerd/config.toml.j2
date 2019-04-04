@@ -1,8 +1,8 @@
 {# Added the followign 2 lines in order to get this working inside a vagrant project 
   https://github.com/kelseyhightower/kubernetes-the-hard-way/issues/301#issuecomment-422532124
 #}
-[plugins.cri]        {# Added this line so to work in vagrant #}
-  stream_server_address = "{{ eth1_ip_address }}"  {# added this line so to work in vagrant #}
+[plugins.cri]
+  stream_server_address = "{{ eth1_ip_address }}"
 [plugins]
   [plugins.cri.containerd]
     snapshotter = "overlayfs"
