@@ -39,4 +39,6 @@
     src: /root/kube-dns.yaml
     kubeconfig: /root/kubectl.kubeconfig
     state: present
-      
+
+# this should have created 3 pods, which you can list:
+# kubectl get pods -l k8s-app=kube-dns -n kube-system
