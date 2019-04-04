@@ -20,7 +20,8 @@
 
 - name: print kube-dns yaml 
   debug:
-    msg: "{{ lookup('url', 'https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml', split_lines=True) }}"
+    msg: "{{ lookup('url', 'https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/deployments/kube-dns.yaml', split_lines=False) }}"
+    #msg: "{{ lookup('url', 'https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml', split_lines=False) }}"
 
 # this is taken from:
 # https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/deployments/kube-dns.yaml
