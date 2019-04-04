@@ -18,17 +18,25 @@
     - openshift
     - PyYAML
 
-- name: print kube-dns yaml 
-  debug:
-    msg: "{{ lookup('url', 'https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/deployments/kube-dns.yaml', split_lines=False) }}"
-    #msg: "{{ lookup('url', 'https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml', split_lines=False) }}"
+# can't get this url lookup to work. 
+#- name: print kube-dns yaml 
+#  debug:
+#    msg: "{{ lookup('url', 'https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/deployments/kube-dns.yaml', split_lines=False) }}"
+#    #msg: "{{ lookup('url', 'https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml', split_lines=True) }}"
+
+- name: Download foo.conf
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml
+    dest: /root/kube-dns.yaml
+    mode: 0440
+
 
 # this is taken from:
 # https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/deployments/kube-dns.yaml
 # note, this could have been done using the shell module instead of k8s. But wanted to try 
 - name: Deploy kube-dns pods
   k8s:
-    definition: "{{ lookup('url', 'https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml', split_lines=True) }}"
+    src: /root/kube-dns.yaml
     kubeconfig: /root/kubectl.kubeconfig
     state: present
       
