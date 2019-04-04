@@ -9,3 +9,4 @@
 - include_tasks: 03_setup_kube_scheduler.yml 
 - include_tasks: 04_sanity_test_the_control_plane_setup.yml 
 - include_tasks: 05_RBAC_setup.yml
+- include_tasks: 06_sanity_check.yml
