@@ -25,5 +25,5 @@
   k8s:
     state: present
     src: "{{ lookup('url', 'https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml', split_lines=True) }}"
-    kubeconfig: /root/kubectl.kubeconfig
+
       
