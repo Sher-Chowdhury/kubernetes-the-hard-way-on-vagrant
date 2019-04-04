@@ -12,7 +12,7 @@ There is no loadbalancer in this setup.
 - kube-controller-manager -
 - kube-scheduler - 
 
-```
+```bash
 systemctl status etcd kube-apiserver kube-controller-manager kube-scheduler
 ```
 
