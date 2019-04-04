@@ -12,13 +12,19 @@ There is no loadbalancer in this setup.
 - kube-controller-manager -
 - kube-scheduler - 
 
+```
+systemctl status etcd kube-apiserver kube-controller-manager kube-scheduler
+```
+
 ## Worker node
 
 - containerd
 - kubelet
 - kube-proxy
 
-
+```bash
+systemctl status kubelet kube-proxy containerd
+```
 
 ## Sanity checks on kubemaster
 

@@ -5,7 +5,7 @@
   roles:
     ## roles_common folder
     - { role: disable-swap, tags: disable-swap }
-    - { role: enable-vagrant-eth1, tags: enable-vagrant-eth1 }
+#    - { role: enable-vagrant-eth1, tags: enable-vagrant-eth1 }
     - { role: packages, tags: packages }
     ## roles_master folder
     - { role: 01_generate_certs, tags: 01_generate_certs }
