@@ -18,6 +18,7 @@
   register: weave_install_status
   changed_when: false
   ignore_errors: yes
+  failed_when: "'IgnoreErrorMessages' in weave_install_status.stdout_lines[0]"
 
 
 #- name: print out weave_install_status
@@ -27,7 +28,8 @@
 # https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#install
 - name: install weave networking pods
   shell: KUBECONFIG=/root/kubectl.kubeconfig kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')&env.IPALLOC_RANGE=10.200.0.0/16"
-  when: weave_install_status.stdout_lines[0] != 'weave'
+  when:
+    - weave_install_status.stdout_lines[0] is undefined
 # the IPALLOC_RANGE specifies the range of IP that can be assigned to pods. 
 
 # troubelshooting commands:
