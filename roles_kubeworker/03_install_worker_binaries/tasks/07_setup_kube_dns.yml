@@ -46,4 +46,6 @@
 # kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
 # kubectl exec -it busybox_pod_name -- nslookup kubernetes
 
+# see:
+# https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/
 
