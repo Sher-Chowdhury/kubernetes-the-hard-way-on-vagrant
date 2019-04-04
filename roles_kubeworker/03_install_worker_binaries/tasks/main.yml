@@ -7,6 +7,7 @@
 - include_tasks: 04_setup_kube_proxy.yml
 - include_tasks: 05_setup_kubectl.yml
 - include_tasks: 06_install_weave_networking_plugin.yml 
+- include_tasks: 07_setup_kube_dns.yml
 
 
 # systemctl daemon-reload

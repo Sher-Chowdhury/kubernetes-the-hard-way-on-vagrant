@@ -18,9 +18,9 @@
   register: weave_install_status
   changed_when: false
 
-- name: print out weave_install_status
-  debug:
-    msg: "{{ weave_install_status }}"
+#- name: print out weave_install_status
+#  debug:
+#    msg: "{{ weave_install_status }}"
 
 # https://www.weave.works/docs/net/latest/kubernetes/kube-addon/#install
 - name: install weave networking pods
@@ -32,5 +32,6 @@
 # kubectl get pods -n kube-system
 # kubectl logs weave-net-2blvz weave -n kube-system
 
+# At this stage, your pod-2-pod communication should now be working. 
 
 

@@ -1,0 +1,29 @@
+---
+
+
+# the following is an ansible requirement. 
+# apt install python-pip
+
+- name: This package is needed for ansible to start installings pip packages
+  apt:
+    name: python-pip
+    state: present
+
+# https://docs.ansible.com/ansible/latest/modules/k8s_module.html
+- name: install pips that are required by ansible k8s module. 
+  pip:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - openshift
+    - PyYAML
+
+# this is taken from:
+# https://github.com/kelseyhightower/kubernetes-the-hard-way/blob/master/deployments/kube-dns.yaml
+# note, this could have been done using the shell module instead of k8s. But wanted to try 
+- name: Deploy kube-dns pods
+  k8s:
+    state: present
+    src: "{{ lookup('url', 'https://storage.googleapis.com/kubernetes-the-hard-way/kube-dns.yaml', split_lines=False) }}"
+
+      
