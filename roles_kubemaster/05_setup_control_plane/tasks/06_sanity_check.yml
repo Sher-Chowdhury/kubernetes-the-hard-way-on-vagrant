@@ -4,7 +4,7 @@
     path: /root/kubernetes-study-guide
     state: directory
 
-- name: Download sample yaml descriptors for testing purposes
+- name: clone study guide git repo 
   git:
     repo: https://github.com/Sher-Chowdhury/Kubernetes-Study-Guide.git
     dest: /root/kubernetes-study-guide
