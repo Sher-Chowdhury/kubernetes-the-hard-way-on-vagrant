@@ -87,7 +87,7 @@ Vagrant.configure(2) do |config|
           kube_version: "1.10.2"
         }
         ansible.playbook = "setup-kube-worker.yml"
-        ansible.tags = "03_install_worker_binaries"
+       # ansible.tags = "03_install_worker_binaries"
       end
 
     end

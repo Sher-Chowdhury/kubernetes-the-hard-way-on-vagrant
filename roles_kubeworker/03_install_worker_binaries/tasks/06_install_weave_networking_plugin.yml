@@ -17,6 +17,8 @@
   shell: KUBECONFIG=/root/kubectl.kubeconfig kubectl get pods -n kube-system  | grep -o weave
   register: weave_install_status
   changed_when: false
+  ignore_errors: yes
+
 
 #- name: print out weave_install_status
 #  debug:
